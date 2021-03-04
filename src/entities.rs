@@ -10,7 +10,7 @@ pub struct Entity<'a> {
 
 impl<'a> Entity<'a> {
     pub fn new(x: i32, y: i32, path: &std::path::Path) -> Self {
-        let image = Surface::load_bmp(path).unwrap();
+        let image = sdl2::image::LoadSurface::from_file(path).unwrap();
         Self {
             x: x,
             y: y,

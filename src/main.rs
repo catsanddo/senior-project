@@ -11,6 +11,7 @@ mod entity;
 
 fn main() {
     let sdl_ctx = sdl2::init().unwrap();
+    let _sdl_image_ctx = sdl2::image::init(sdl2::image::InitFlag::PNG).unwrap();
     let video_subsystem = sdl_ctx.video().unwrap();
 
     let window = video_subsystem.window("Game", 512, 448)
@@ -21,13 +22,14 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
 
     //let mut player = Entity::new(0, 0, std::path::Path::new("/home/catsanddo/code/senior-project/game/target/debug/player.bmp"));
-    let mut player = entity::Entity::new(0, 0, std::path::Path::new("./art/player.bmp"));
+    let mut player = entity::Entity::new(0, 0, std::path::Path::new("./art/player.png"));
 
-    canvas.set_draw_color(Color::RGB(0, 0, 0));
+    canvas.set_draw_color(Color::WHITE);
     canvas.clear();
     canvas.present();
     let mut event_pump = sdl_ctx.event_pump().unwrap();
     'running: loop {
+        canvas.set_draw_color(Color::RGB(50, 50, 50));
         canvas.clear();
         for event in event_pump.poll_iter() {
             match event {
@@ -44,6 +46,7 @@ fn main() {
         }
 
         let mut s_buffer = Surface::new(256, 224, PixelFormatEnum::RGB24).unwrap();
+        s_buffer.fill_rect(None, Color::BLUE).expect("Could not clear buffer");
         player.draw(&mut s_buffer);
 
         let texture_creator = canvas.texture_creator();

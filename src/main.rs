@@ -6,6 +6,9 @@ use sdl2::keyboard::Keycode;
 use sdl2::surface::Surface;
 use std::time::Duration;
 
+#[path = "./entities.rs"]
+mod entity;
+
 fn main() {
     let sdl_ctx = sdl2::init().unwrap();
     let video_subsystem = sdl_ctx.video().unwrap();
@@ -18,7 +21,7 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
 
     //let mut player = Entity::new(0, 0, std::path::Path::new("/home/catsanddo/code/senior-project/game/target/debug/player.bmp"));
-    let mut player = Entity::new(0, 0, std::path::Path::new("./art/player.bmp"));
+    let mut player = entity::Entity::new(0, 0, std::path::Path::new("./art/player.bmp"));
 
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
@@ -48,27 +51,5 @@ fn main() {
         canvas.copy(&texture, None, None).expect("Could not render to the screen");
         canvas.present();
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
-    }
-}
-
-struct Entity<'a> {
-    x: i32,
-    y: i32,
-    sprite: Surface<'a>,
-}
-
-impl<'a> Entity<'a> {
-    fn new(x: i32, y: i32, path: &std::path::Path) -> Self {
-        let image = Surface::load_bmp(path).unwrap();
-        Self {
-            x: x,
-            y: y,
-            sprite: image,
-        }
-    }
-
-    fn draw(&self, surface: &mut Surface<'_>) {
-        let dest = sdl2::rect::Rect::new(self.x, self.y, 0, 0);
-        self.sprite.blit(None, surface, dest).expect("Could not blit to screen buffer");
     }
 }

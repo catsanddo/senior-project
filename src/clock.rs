@@ -26,4 +26,9 @@ impl Clock {
         // Update instant
         self.now = time::Instant::now();
     }
+
+    // Returns delta_time field as float seconds
+    pub fn delta_time(&self) -> f32 {
+        self.delta_time.as_millis() as f32 / 1000.0
+    }
 }

@@ -11,9 +11,12 @@ trait TypeInfo {
 pub struct Player<'a> {
     sprite: Surface<'a>,
     rect: Rect,
+    ax: f32,
+    ay: f32,
     vx: i32,
     vy: i32,
     flip: bool,
+    pub jump: bool,
 }
 
 impl<'a> Player<'a> {
@@ -25,9 +28,12 @@ impl<'a> Player<'a> {
         Self {
             sprite: image,
             rect: rect,
+            ax: x as f32,
+            ay: y as f32,
             vx: 0,
             vy: 0,
             flip: false,
+            jump: true,
         }
     }
 
@@ -38,7 +44,7 @@ impl<'a> Player<'a> {
         canvas.copy_ex(&texture, None, self.rect.clone(), 0.0, None, self.flip, false).expect("Could not render player");
     }
 
-    pub fn update(&mut self, walls: &[Wall]) {
+    pub fn update(&mut self, delta_time: f32, walls: &[Wall]) {
         // Animation
         if self.vx < 0 {
             self.flip = true;
@@ -47,27 +53,31 @@ impl<'a> Player<'a> {
         }
 
         // Gravity
-        //self.vy += 2;
+        self.vy += 20;
 
+        let dx = self.vx as f32 * delta_time;
+        let dy = self.vy as f32 * delta_time;
         // Movement
-        if self.collide(self.rect.x() + self.vx, self.rect.y(), walls) {
+        if self.collide((self.ax + dx) as i32, self.rect.y(), walls) {
             while !(self.collide(self.rect.x() + self.vx.signum(), self.rect.y(), walls)) {
                 self.rect.set_x(self.rect.x() + self.vx.signum());
             }
             self.vx = 0;
         }
 
-        if self.collide(self.rect.x(), self.rect.y() + self.vy, walls) {
+        if self.collide(self.rect.x(), (self.ay + dy) as i32, walls) {
             while !self.collide(self.rect.x(), self.rect.y() + self.vy.signum(), walls) {
                 self.rect.set_y(self.rect.y() + self.vy.signum());
             }
             self.vy = 0;
+            self.jump = true;
         }
 
-        self.rect.set_x(self.rect.x() + self.vx);
-        self.rect.set_y(self.rect.y() + self.vy);
+        self.ax += self.vx as f32 * delta_time;
+        self.ay += self.vy as f32 * delta_time;
+        self.rect.set_x(self.ax as i32);
+        self.rect.set_y(self.ay as i32);
         self.vx = 0;
-        self.vy = 0;
     }
 
     pub fn mv(&mut self, dx: i32, dy: i32) {

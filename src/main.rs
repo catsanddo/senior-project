@@ -31,6 +31,9 @@ fn main() {
         }
     }
     walls.push(entity::Wall::new(16, 56, true, std::path::Path::new("./art/brick.png")));
+    for x in 0..5 {
+        walls.push(entity::Wall::new(56 + x * 8, 40, true, std::path::Path::new("./art/brick.png")));
+    }
 
     canvas.set_draw_color(Color::WHITE);
     canvas.clear();

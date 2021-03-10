@@ -17,14 +17,13 @@ pub struct Player<'a> {
     vy: i32,
     flip: bool,
     pub jump: bool,
+    frame: f32,
 }
 
 impl<'a> Player<'a> {
     pub fn new(x: i32, y: i32, path: &std::path::Path) -> Self {
         let image: Surface = sdl2::image::LoadSurface::from_file(path).unwrap();
-        let mut rect = image.rect();
-        rect.set_x(x);
-        rect.set_y(y);
+        let rect = Rect::new(x, y, 8, 12);
         Self {
             sprite: image,
             rect: rect,
@@ -34,22 +33,32 @@ impl<'a> Player<'a> {
             vy: 0,
             flip: false,
             jump: true,
+            frame: 0.0,
         }
     }
 
     pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
         let texture_creator = canvas.texture_creator();
         let texture = self.sprite.as_texture(&texture_creator).unwrap();
+        let src_rect = Rect::new(8 * self.frame as i32, 0, 8, 12);
         
-        canvas.copy_ex(&texture, None, self.rect.clone(), 0.0, None, self.flip, false).expect("Could not render player");
+        canvas.copy_ex(&texture, src_rect, self.rect.clone(), 0.0, None, self.flip, false).expect("Could not render player");
     }
 
     pub fn update(&mut self, delta_time: f32, walls: &[Wall]) {
         // Animation
-        if self.vx < 0 {
-            self.flip = true;
-        } else if self.vx > 0 {
-            self.flip = false;
+        if self.vx != 0 {
+            self.frame += 10.0 * delta_time;
+            if self.frame >= 3.0 {
+                self.frame = 1.0;
+            }
+            if self.vx < 0 {
+                self.flip = true;
+            } else if self.vx > 0 {
+                self.flip = false;
+            }
+        } else {
+            self.frame = 0.0;
         }
 
         // Gravity

@@ -22,7 +22,7 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
 
     let mut clock = clock::Clock::new(60);
-    let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player.png"));
+    let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player1.png"));
 
     let mut walls = Vec::new();
     for x in 0..35 {

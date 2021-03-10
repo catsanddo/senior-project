@@ -48,9 +48,10 @@ impl<'a> Player<'a> {
     pub fn update(&mut self, delta_time: f32, walls: &[Wall]) {
         // Animation
         if self.vx != 0 {
-            self.frame += 10.0 * delta_time;
-            if self.frame >= 3.0 {
-                self.frame = 1.0;
+            // Walk cycle at 11 FPS
+            self.frame += 11.0 * delta_time;
+            if self.frame >= 4.0 {
+                self.frame = 0.0;
             }
             if self.vx < 0 {
                 self.flip = true;
@@ -78,8 +79,8 @@ impl<'a> Player<'a> {
             while !self.collide(self.rect.x(), self.rect.y() + self.vy.signum(), walls) {
                 self.rect.set_y(self.rect.y() + self.vy.signum());
             }
+            if self.vy > 0 { self.jump = true; }
             self.vy = 0;
-            self.jump = true;
         }
 
         self.ax += self.vx as f32 * delta_time;

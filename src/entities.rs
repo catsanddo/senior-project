@@ -14,7 +14,7 @@ pub struct Player<'a> {
     ax: f32,
     ay: f32,
     vx: i32,
-    vy: i32,
+    pub vy: i32,
     flip: bool,
     pub jump: bool,
     frame: f32,
@@ -63,7 +63,7 @@ impl<'a> Player<'a> {
         }
 
         // Gravity
-        self.vy += 20;
+        self.vy += 15;
 
         let dx = self.vx as f32 * delta_time;
         let dy = self.vy as f32 * delta_time;

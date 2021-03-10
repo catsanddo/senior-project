@@ -50,7 +50,7 @@ fn main() {
             match key {
                 Scancode::Up => {
                     if player.jump {
-                        player.mv(0, -300);
+                        player.mv(0, -278);
                         player.jump = false;
                     }
                 },
@@ -64,6 +64,11 @@ fn main() {
                 Event::Quit {..} |
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
+                },
+                Event::KeyUp { keycode: Some(Keycode::Up), .. } => {
+                    if player.vy < 0 {
+                        player.vy = -100;
+                    }
                 },
                 //Event::KeyDown { keycode: Some(Keycode::Up), .. } => player.mv(0, -3),
                 //Event::KeyDown { keycode: Some(Keycode::Down), .. } => player.mv(0, 3),

@@ -65,6 +65,10 @@ fn main() {
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
                 },
+                Event::KeyDown { keycode: Some(Keycode::Space), .. } => {
+                    player.attack = true;
+                    player.frame = 4.0;
+                },
                 Event::KeyUp { keycode: Some(Keycode::Up), .. } => {
                     if player.vy < 0 {
                         player.vy = -100;

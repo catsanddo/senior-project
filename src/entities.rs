@@ -10,6 +10,7 @@ trait TypeInfo {
 // Player
 pub struct Player<'a> {
     sprite: Surface<'a>,
+    spriteA: Surface<'a>,
     rect: Rect,
     ax: f32,
     ay: f32,
@@ -17,15 +18,18 @@ pub struct Player<'a> {
     pub vy: i32,
     flip: bool,
     pub jump: bool,
-    frame: f32,
+    pub frame: f32,
+    pub attack: bool,
 }
 
 impl<'a> Player<'a> {
     pub fn new(x: i32, y: i32, path: &std::path::Path) -> Self {
         let image: Surface = sdl2::image::LoadSurface::from_file(path).unwrap();
+        let attack: Surface = sdl2::image::LoadSurface::from_file(std::path::Path::new("./art/playerA.png")).unwrap();
         let rect = Rect::new(x, y, 8, 12);
         Self {
             sprite: image,
+            spriteA: attack,
             rect: rect,
             ax: x as f32,
             ay: y as f32,
@@ -34,6 +38,7 @@ impl<'a> Player<'a> {
             flip: false,
             jump: true,
             frame: 0.0,
+            attack: false,
         }
     }
 
@@ -41,25 +46,46 @@ impl<'a> Player<'a> {
         let texture_creator = canvas.texture_creator();
         let texture = self.sprite.as_texture(&texture_creator).unwrap();
         let src_rect = Rect::new(8 * self.frame as i32, 0, 8, 12);
-        
+
         canvas.copy_ex(&texture, src_rect, self.rect.clone(), 0.0, None, self.flip, false).expect("Could not render player");
+        
+        // Draw weapon when attacking
+        if self.attack {
+            let src_rect = Rect::new(8 * (self.frame as i32 + 3), 0, 8, 12);
+            println!("{}", (self.frame as i32));
+            let mut dest_rect = self.rect.clone();
+            if self.flip {
+                dest_rect.set_x(dest_rect.x() - 8);
+            } else {
+                dest_rect.set_x(dest_rect.x() + 8);
+            }
+            canvas.copy_ex(&texture, src_rect, dest_rect, 0.0, None, self.flip, false).expect("Could not render player");
+        }
     }
 
     pub fn update(&mut self, delta_time: f32, walls: &[Wall]) {
         // Animation
-        if self.vx != 0 {
-            // Walk cycle at 11 FPS
-            self.frame += 11.0 * delta_time;
-            if self.frame >= 4.0 {
+        if self.attack {
+                self.frame += 11.0 * delta_time;
+                if self.frame >= 7.0 {
+                    self.attack = false;
+                    self.frame = 0.0;
+                }
+        } else {
+            if self.vx != 0 {
+                // Walk cycle at 11 FPS
+                self.frame += 11.0 * delta_time;
+                if self.frame >= 4.0 {
+                    self.frame = 0.0;
+                }
+                if self.vx < 0 {
+                    self.flip = true;
+                } else if self.vx > 0 {
+                    self.flip = false;
+                }
+            } else {
                 self.frame = 0.0;
             }
-            if self.vx < 0 {
-                self.flip = true;
-            } else if self.vx > 0 {
-                self.flip = false;
-            }
-        } else {
-            self.frame = 0.0;
         }
 
         // Gravity

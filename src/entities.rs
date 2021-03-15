@@ -10,7 +10,6 @@ trait TypeInfo {
 // Player
 pub struct Player<'a> {
     sprite: Surface<'a>,
-    spriteA: Surface<'a>,
     rect: Rect,
     ax: f32,
     ay: f32,
@@ -25,11 +24,9 @@ pub struct Player<'a> {
 impl<'a> Player<'a> {
     pub fn new(x: i32, y: i32, path: &std::path::Path) -> Self {
         let image: Surface = sdl2::image::LoadSurface::from_file(path).unwrap();
-        let attack: Surface = sdl2::image::LoadSurface::from_file(std::path::Path::new("./art/playerA.png")).unwrap();
         let rect = Rect::new(x, y, 8, 12);
         Self {
             sprite: image,
-            spriteA: attack,
             rect: rect,
             ax: x as f32,
             ay: y as f32,
@@ -52,7 +49,6 @@ impl<'a> Player<'a> {
         // Draw weapon when attacking
         if self.attack {
             let src_rect = Rect::new(8 * (self.frame as i32 + 3), 0, 8, 12);
-            println!("{}", (self.frame as i32));
             let mut dest_rect = self.rect.clone();
             if self.flip {
                 dest_rect.set_x(dest_rect.x() - 8);
@@ -159,7 +155,7 @@ impl<'a> Wall<'a> {
         let mut rect = image.rect();
         rect.set_x(x);
         rect.set_y(y);
-        let mut collider = rect.clone();
+        let collider = rect.clone();
         //collider.resize(rect.width() * 2, rect.height() * 2);
         Self {
             sprite: image,

@@ -22,7 +22,7 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
 
     let mut clock = clock::Clock::new(60);
-    let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player1.png"));
+    let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player.png"));
 
     let mut walls = Vec::new();
     for x in 0..35 {
@@ -48,7 +48,7 @@ fn main() {
         let scancodes = keys.pressed_scancodes();
         for key in scancodes {
             match key {
-                Scancode::Up => {
+                Scancode::X => {
                     if player.jump {
                         player.mv(0, -278);
                         player.jump = false;
@@ -65,15 +65,17 @@ fn main() {
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
                 },
-                Event::KeyDown { keycode: Some(Keycode::Space), .. } => {
+                Event::KeyDown { keycode: Some(Keycode::Z), .. } => {
                     player.attack = true;
                     player.frame = 4.0;
                 },
+                /*
                 Event::KeyUp { keycode: Some(Keycode::Up), .. } => {
                     if player.vy < 0 {
                         player.vy = -100;
                     }
                 },
+                */
                 //Event::KeyDown { keycode: Some(Keycode::Up), .. } => player.mv(0, -3),
                 //Event::KeyDown { keycode: Some(Keycode::Down), .. } => player.mv(0, 3),
                 //Event::KeyDown { keycode: Some(Keycode::Left), .. } => player.mv(-300, 0),
@@ -82,18 +84,13 @@ fn main() {
             }
         }
 
-        //let mut s_buffer = Surface::new(256, 224, PixelFormatEnum::RGB24).unwrap();
-        //s_buffer.fill_rect(None, Color::BLUE).expect("Could not clear buffer");
-        player.draw(&mut canvas);
-        player.update(clock.delta_time(), walls.as_slice());
-
         for wall in &walls {
             wall.draw(&mut canvas);
         }
 
-        //let texture_creator = canvas.texture_creator();
-        //let texture = s_buffer.as_texture(&texture_creator).unwrap();
-        //canvas.copy(&texture, None, None).expect("Could not render to the screen");
+        player.draw(&mut canvas);
+        player.update(clock.delta_time(), walls.as_slice());
+
         canvas.present();
         clock.tick();
     }

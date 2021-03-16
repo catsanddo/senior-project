@@ -25,12 +25,13 @@ fn main() {
     let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player.png"));
 
     let mut walls = Vec::new();
-    for x in 0..35 {
+    for x in 0..32 {
         for y in 0..20 {
             walls.push(entity::Wall::new(x * 8, y * 8 + 64, true, std::path::Path::new("./art/brick.png")));
         }
     }
     walls.push(entity::Wall::new(16, 56, true, std::path::Path::new("./art/brick.png")));
+    walls.push(entity::Wall::new(16, 48, true, std::path::Path::new("./art/brick.png")));
     for x in 0..5 {
         walls.push(entity::Wall::new(56 + x * 8, 40, true, std::path::Path::new("./art/brick.png")));
     }
@@ -66,16 +67,16 @@ fn main() {
                     break 'running
                 },
                 Event::KeyDown { keycode: Some(Keycode::Z), .. } => {
-                    player.attack = true;
-                    player.frame = 4.0;
-                },
-                /*
-                Event::KeyUp { keycode: Some(Keycode::Up), .. } => {
-                    if player.vy < 0 {
-                        player.vy = -100;
+                    if !player.attack {
+                        player.attack = true;
+                        player.frame = 4.0;
                     }
                 },
-                */
+                Event::KeyUp { keycode: Some(Keycode::X), .. } => {
+                    if player.vy < 0 {
+                        player.vy = -50;
+                    }
+                },
                 //Event::KeyDown { keycode: Some(Keycode::Up), .. } => player.mv(0, -3),
                 //Event::KeyDown { keycode: Some(Keycode::Down), .. } => player.mv(0, 3),
                 //Event::KeyDown { keycode: Some(Keycode::Left), .. } => player.mv(-300, 0),
@@ -89,7 +90,7 @@ fn main() {
         }
 
         player.draw(&mut canvas);
-        player.update(clock.delta_time(), walls.as_slice());
+        player.update(clock.delta_time(), &mut walls);
 
         canvas.present();
         clock.tick();

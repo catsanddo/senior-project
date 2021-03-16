@@ -59,7 +59,7 @@ impl<'a> Player<'a> {
         }
     }
 
-    pub fn update(&mut self, delta_time: f32, walls: &[Wall]) {
+    pub fn update(&mut self, delta_time: f32, walls: &mut Vec<Wall>) {
         // Animation
         if self.attack {
                 self.frame += 11.0 * delta_time;
@@ -110,6 +110,23 @@ impl<'a> Player<'a> {
         self.rect.set_x(self.ax as i32);
         self.rect.set_y(self.ay as i32);
         self.vx = 0;
+
+        // Attacking
+        if self.attack {
+            let mut attack_collider = self.rect.clone();
+            if self.flip {
+                attack_collider.set_x(attack_collider.x() - 8);
+            } else {
+                attack_collider.set_x(attack_collider.x() + 8);
+            }
+            
+            for i in 0..walls.len() {
+                if attack_collider.has_intersection(walls[i].collider) {
+                    walls.remove(i);
+                    break;
+                }
+            }
+        }
     }
 
     pub fn mv(&mut self, dx: i32, dy: i32) {

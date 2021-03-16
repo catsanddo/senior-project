@@ -6,8 +6,8 @@ use sdl2::keyboard::{Scancode, Keycode};
 
 #[path = "./entities.rs"]
 mod entity;
-#[path = "./clock.rs"]
-mod clock;
+#[path = "./util.rs"]
+mod util;
 
 fn main() {
     let sdl_ctx = sdl2::init().unwrap();

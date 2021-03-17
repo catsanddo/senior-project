@@ -10,7 +10,9 @@ trait TypeInfo {
 // Player
 pub struct Player<'a> {
     sprite: Surface<'a>,
-    rect: Rect,
+    pub rect: Rect,
+    pub sx: i32,
+    pub sy: i32,
     ax: f32,
     ay: f32,
     vx: i32,
@@ -28,6 +30,8 @@ impl<'a> Player<'a> {
         Self {
             sprite: image,
             rect: rect,
+            sx: x,
+            sy: y,
             ax: x as f32,
             ay: y as f32,
             vx: 0,
@@ -161,8 +165,10 @@ impl TypeInfo for Player<'_> {
 // Obstacles
 pub struct Wall<'a> {
     sprite: Surface<'a>,
-    rect: Rect,
+    pub rect: Rect,
     collider: Rect,
+    pub sx: i32,
+    pub sy: i32,
     solid: bool,
 }
 
@@ -178,6 +184,8 @@ impl<'a> Wall<'a> {
             sprite: image,
             rect: rect,
             collider: collider,
+            sx: x,
+            sy: y,
             solid: solid,
         }
     }

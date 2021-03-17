@@ -21,7 +21,7 @@ fn main() {
         .unwrap();
     let mut canvas = window.into_canvas().build().unwrap();
 
-    let mut clock = clock::Clock::new(60);
+    let mut clock = util::Clock::new(60);
     let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player.png"));
 
     let mut walls = Vec::new();
@@ -35,6 +35,8 @@ fn main() {
     for x in 0..5 {
         walls.push(entity::Wall::new(56 + x * 8, 40, true, std::path::Path::new("./art/brick.png")));
     }
+
+    let camera = util::Camera;
 
     canvas.set_draw_color(Color::WHITE);
     canvas.clear();
@@ -91,6 +93,8 @@ fn main() {
 
         player.draw(&mut canvas);
         player.update(clock.delta_time(), &mut walls);
+
+        camera.update(&mut player, walls.as_mut_slice());
 
         canvas.present();
         clock.tick();

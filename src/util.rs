@@ -1,4 +1,8 @@
+extern crate entity;
 use std::time;
+
+const WIDTH: i32 = 256;
+const HEIGHT: i32 = 224;
 
 pub struct Clock {
     now: time::Instant,
@@ -30,5 +34,20 @@ impl Clock {
     // Returns delta_time field as float seconds
     pub fn delta_time(&self) -> f32 {
         self.delta_time.as_millis() as f32 / 1000.0
+    }
+}
+
+pub struct Camera;
+
+impl Camera {
+    pub fn update(&self, player: &mut entity::Player, walls: &mut [entity::Wall]) {
+        // Move walls relative to player
+        for wall in walls {
+            let dx = wall.rect.x() - player.rect.y();
+            wall.rect.set_x(dx  + (WIDTH / 2 - 4));
+        }
+        player.rect.set_x(WIDTH / 2 - 4);
+
+        // Move the player to the center of screen
     }
 }

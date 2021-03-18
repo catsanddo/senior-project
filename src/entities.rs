@@ -3,6 +3,9 @@ extern crate sdl2;
 use sdl2::surface::Surface;
 use sdl2::rect::Rect;
 
+const WIDTH: i32 = 256;
+const HEIGHT: i32 = 224;
+
 trait TypeInfo {
     fn type_of(&self) -> &'static str;
 }
@@ -114,6 +117,16 @@ impl<'a> Player<'a> {
         self.rect.set_x(self.ax as i32);
         self.rect.set_y(self.ay as i32);
         self.vx = 0;
+
+        /*
+        for wall in walls.as_mut_slice() {
+            let dx = wall.rect.x() - self.rect.y();
+            wall.rect.set_x(dx  + (WIDTH / 2 - 4));
+            println!("{}", delta_time);
+        }
+        self.rect.set_x(WIDTH / 2 - 4);
+        println!("wall");
+        */
 
         // Attacking
         if self.attack {

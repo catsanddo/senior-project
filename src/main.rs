@@ -1,4 +1,5 @@
 extern crate sdl2;
+extern crate json;
 
 use sdl2::pixels::Color;
 use sdl2::event::Event;
@@ -22,6 +23,7 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
 
     let mut clock = util::Clock::new(60);
+    /*
     let mut player = entity::Player::new(0, 0, std::path::Path::new("./art/player.png"));
 
     let mut walls = Vec::new();
@@ -35,8 +37,8 @@ fn main() {
     for x in 0..5 {
         walls.push(entity::Wall::new(56 + x * 8, 40, true, std::path::Path::new("./art/brick.png")));
     }
-
-    let camera = util::Camera;
+    */
+    let (mut player, mut walls) = load_scene("./level.json");
 
     canvas.set_draw_color(Color::WHITE);
     canvas.clear();
@@ -94,9 +96,19 @@ fn main() {
         player.draw(&mut canvas);
         player.update(clock.delta_time(), &mut walls);
 
-        camera.update(&mut player, walls.as_mut_slice());
-
         canvas.present();
         clock.tick();
     }
+}
+
+fn load_scene(file_name: &str) -> (entity::Player<'static>, Vec<entity::Wall<'static>>) {
+    let raw_data = std::fs::read_to_string(file_name).unwrap();
+    let scene_data = json::parse(&raw_data).unwrap();
+    let mut player = entity::Player::new(scene_data["player"]["x"].as_f32().unwrap() as i32, scene_data["player"]["y"].as_f32().unwrap() as i32,
+        std::path::Path::new("./art/player.png"));
+    let mut walls = Vec::new();
+    for wall in scene_data["walls"].members() {
+        walls.push(entity::Wall::new(wall["x"].as_f32().unwrap() as i32, wall["y"].as_f32().unwrap() as i32, true, std::path::Path::new("./art/brick.png")));
+    }
+    (player, walls)
 }

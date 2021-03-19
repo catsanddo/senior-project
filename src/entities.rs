@@ -3,9 +3,6 @@ extern crate sdl2;
 use sdl2::surface::Surface;
 use sdl2::rect::Rect;
 
-const WIDTH: i32 = 256;
-const HEIGHT: i32 = 224;
-
 trait TypeInfo {
     fn type_of(&self) -> &'static str;
 }
@@ -46,17 +43,18 @@ impl<'a> Player<'a> {
         }
     }
 
-    pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
+    pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, camera_pos: &[i32]) {
         let texture_creator = canvas.texture_creator();
         let texture = self.sprite.as_texture(&texture_creator).unwrap();
         let src_rect = Rect::new(8 * self.frame as i32, 0, 8, 12);
+        let dest = Rect::new(self.sx - camera_pos[0], self.sy - camera_pos[1], 8, 12);
 
-        canvas.copy_ex(&texture, src_rect, self.rect.clone(), 0.0, None, self.flip, false).expect("Could not render player");
+        canvas.copy_ex(&texture, src_rect, dest, 0.0, None, self.flip, false).expect("Could not render player");
         
         // Draw weapon when attacking
         if self.attack {
             let src_rect = Rect::new(8 * (self.frame as i32 + 3), 0, 8, 12);
-            let mut dest_rect = self.rect.clone();
+            let mut dest_rect = Rect::new(self.sx - camera_pos[0], self.sy - camera_pos[1], 8, 12);
             if self.flip {
                 dest_rect.set_x(dest_rect.x() - 8);
             } else {
@@ -100,6 +98,7 @@ impl<'a> Player<'a> {
         if self.collide((self.ax + dx) as i32, self.rect.y(), walls) {
             while !(self.collide(self.rect.x() + self.vx.signum(), self.rect.y(), walls)) {
                 self.rect.set_x(self.rect.x() + self.vx.signum());
+                self.ax = self.rect.x() as f32;
             }
             self.vx = 0;
         }
@@ -107,6 +106,7 @@ impl<'a> Player<'a> {
         if self.collide(self.rect.x(), (self.ay + dy) as i32, walls) {
             while !self.collide(self.rect.x(), self.rect.y() + self.vy.signum(), walls) {
                 self.rect.set_y(self.rect.y() + self.vy.signum());
+                self.ay = self.rect.y() as f32;
             }
             if self.vy > 0 { self.jump = true; }
             self.vy = 0;
@@ -116,6 +116,8 @@ impl<'a> Player<'a> {
         self.ay += self.vy as f32 * delta_time;
         self.rect.set_x(self.ax as i32);
         self.rect.set_y(self.ay as i32);
+        self.sx = self.ax as i32;
+        self.sy = self.ay as i32;
         self.vx = 0;
 
         /*
@@ -203,11 +205,12 @@ impl<'a> Wall<'a> {
         }
     }
 
-    pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
+    pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, camera_pos: &[i32]) {
         let texture_creator = canvas.texture_creator();
         let texture = self.sprite.as_texture(&texture_creator).unwrap();
+        let dest = Rect::new(self.sx - camera_pos[0], self.sy - camera_pos[1], 8, 8);
         
-        canvas.copy(&texture, None, self.rect.clone()).expect("Could not render wall");
+        canvas.copy(&texture, None, dest).expect("Could not render wall");
     }
 
     pub fn solid(&self) -> bool {

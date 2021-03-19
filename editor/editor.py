@@ -31,6 +31,9 @@ def save_scene(walls, player):
             if e.type == pg.KEYDOWN:
                 if e.key == pg.K_RETURN:
                     run = False
+                elif e.key == pg.K_ESCAPE:
+                    print('Canceled!\n')
+                    return True
                 elif e.key == pg.K_BACKSPACE:
                     file_name = file_name[:-1]
                 else:
@@ -69,6 +72,9 @@ def load_scene(walls, player):
             if e.type == pg.KEYDOWN:
                 if e.key == pg.K_RETURN:
                     run = False
+                elif e.key == pg.K_ESCAPE:
+                    print('Canceled!\n')
+                    return True
                 elif e.key == pg.K_BACKSPACE:
                     file_name = file_name[:-1]
                 else:
@@ -116,6 +122,13 @@ def main():
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 running = False
+            if e.type == pg.MOUSEWHEEL:
+                if e.y == 1:
+                    cur_sprite -= 1
+                    if cur_sprite < 0: cur_sprite = len(sprite) - 1
+                elif e.y == -1:
+                    cur_sprite += 1
+                    if cur_sprite > len(sprite) - 1: cur_sprite = 0
             if e.type == pg.KEYDOWN:
                 # Clear all
                 if e.key == pg.K_c:

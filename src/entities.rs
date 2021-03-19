@@ -73,20 +73,20 @@ impl<'a> Player<'a> {
                     self.frame = 0.0;
                 }
         } else {
-            if self.vx != 0 {
+            if self.vx != 0 && self.vy == 0 {
                 // Walk cycle at 11 FPS
                 self.frame += 11.0 * delta_time;
                 if self.frame >= 4.0 {
                     self.frame = 0.0;
                 }
-                if self.vx < 0 {
-                    self.flip = true;
-                } else if self.vx > 0 {
-                    self.flip = false;
-                }
             } else {
-                self.frame = 0.0;
+                self.frame = 1.0;
             }
+        }
+        if self.vx < 0 {
+            self.flip = true;
+        } else if self.vx > 0 {
+            self.flip = false;
         }
 
         // Gravity
@@ -110,7 +110,7 @@ impl<'a> Player<'a> {
             }
             if self.vy > 0 { self.jump = true; }
             self.vy = 0;
-        }
+        } else { self.jump = false; }
 
         self.ax += self.vx as f32 * delta_time;
         self.ay += self.vy as f32 * delta_time;

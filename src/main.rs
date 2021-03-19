@@ -87,7 +87,7 @@ fn main() {
         player.update(clock.delta_time(), &mut walls);
 
         camera_pos[0] = player.sx - WIDTH / 2;
-        if player.jump { camera_pos[1] = player.sy - HEIGHT / 2; }
+        camera_pos[1] = player.sy - HEIGHT / 2;
 
         canvas.present();
         clock.tick();

@@ -35,19 +35,28 @@ fn main() {
     canvas.present();
     canvas.set_scale(2.0, 2.0).expect("Could not set scale");
     let mut event_pump = sdl_ctx.event_pump().unwrap();
+    let mut x_key: i8 = 0;
     'running: loop {
         canvas.set_draw_color(Color::BLACK);
         canvas.clear();
 
         let keys = sdl2::keyboard::KeyboardState::new(&event_pump);
         let scancodes = keys.pressed_scancodes();
+        if x_key == 3 { x_key = 0; }
+        if x_key == 2 { x_key = 3; }
         for key in scancodes {
             match key {
                 Scancode::X => {
+                    if x_key == 0 { x_key = 1; } else
+                    if x_key == 1 { x_key = 2; } else
+                    if x_key == 3 { x_key = 2; }
+
+                    /*
                     if player.jump {
                         player.mv(0, -278);
                         player.jump = false;
                     }
+                    */
                 },
                 Scancode::Left => player.mv(-50, 0),
                 Scancode::Right => player.mv(50, 0),
@@ -66,10 +75,17 @@ fn main() {
                         player.frame = 4.0;
                     }
                 },
+                Event::KeyDown { keycode: Some(Keycode::R), .. } => {
+                    let (mut p, mut w) = load_scene("./level.json");
+                    player = p;
+                    walls = w;
+                },
                 Event::KeyUp { keycode: Some(Keycode::X), .. } => {
+                    /*
                     if player.vy < 0 {
                         player.vy = -50;
                     }
+                    */
                 },
                 //Event::KeyDown { keycode: Some(Keycode::Up), .. } => player.mv(0, -3),
                 //Event::KeyDown { keycode: Some(Keycode::Down), .. } => player.mv(0, 3),
@@ -77,6 +93,13 @@ fn main() {
                 //Event::KeyDown { keycode: Some(Keycode::Right), .. } => player.mv(3, 0),
                 _ => {},
             }
+        }
+
+        if x_key == 1 && player.jump {
+            player.mv(0, -278);
+            player.jump = false;
+        } else if x_key == 3 && player.vy < 0 {
+            player.vy = -50;
         }
 
         for wall in &walls {

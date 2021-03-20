@@ -82,6 +82,11 @@ impl<'a> Player<'a> {
             } else {
                 self.frame = 1.0;
             }
+            if self.vy < 0 {
+                self.frame = 2.0;
+            } else if self.vy > 0 {
+                self.frame = 0.0;
+            }
         }
         if self.vx < 0 {
             self.flip = true;

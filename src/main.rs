@@ -109,8 +109,11 @@ fn main() {
         player.draw(&mut canvas, &camera_pos[..]);
         player.update(clock.delta_time(), &mut walls);
 
-        camera_pos[0] = player.sx - WIDTH / 2;
-        camera_pos[1] = player.sy - HEIGHT / 2;
+        camera_pos[0] = camera_pos[0] + (((player.sx - WIDTH / 2) - camera_pos[0]) as f32 * 0.05) as i32;
+        // Lerp the y if the player is on ground or near the top/bottom of the screen
+        if player.jump || player.sy - camera_pos[1] > HEIGHT - 50 {
+            camera_pos[1] = camera_pos[1] + (((player.sy - HEIGHT / 2) - camera_pos[1]) as f32 * 0.05) as i32;
+        }
 
         canvas.present();
         clock.tick();

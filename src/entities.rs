@@ -96,6 +96,9 @@ impl<'a> Player<'a> {
 
         // Gravity
         self.vy += 15;
+        if self.vy > 270 {
+            self.vy = 270;
+        }
 
         let dx = self.vx as f32 * delta_time;
         let dy = self.vy as f32 * delta_time;

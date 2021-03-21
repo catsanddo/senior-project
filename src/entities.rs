@@ -3,6 +3,7 @@ extern crate sdl2;
 use sdl2::surface::Surface;
 use sdl2::rect::Rect;
 
+// Returns name of struct as str
 trait TypeInfo {
     fn type_of(&self) -> &'static str;
 }
@@ -128,16 +129,6 @@ impl<'a> Player<'a> {
         self.sy = self.ay as i32;
         self.vx = 0;
 
-        /*
-        for wall in walls.as_mut_slice() {
-            let dx = wall.rect.x() - self.rect.y();
-            wall.rect.set_x(dx  + (WIDTH / 2 - 4));
-            println!("{}", delta_time);
-        }
-        self.rect.set_x(WIDTH / 2 - 4);
-        println!("wall");
-        */
-
         // Attacking
         if self.attack {
             let mut attack_collider = self.rect.clone();
@@ -214,17 +205,20 @@ impl<'a> Wall<'a> {
     }
 
     pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, camera_pos: &[i32]) {
-        let texture_creator = canvas.texture_creator();
-        let texture = self.sprite.as_texture(&texture_creator).unwrap();
-        let dest = Rect::new(self.sx - camera_pos[0], self.sy - camera_pos[1], 8, 8);
-        
-        canvas.copy(&texture, None, dest).expect("Could not render wall");
+        if self.sx + 8 > camera_pos[0] && self.sx < camera_pos[0] + 256 && self.sy + 8 > camera_pos[1] && self.sy < camera_pos[1] + 224 {
+            let texture_creator = canvas.texture_creator();
+            let texture = self.sprite.as_texture(&texture_creator).unwrap();
+            let dest = Rect::new(self.sx - camera_pos[0], self.sy - camera_pos[1], 8, 8);
+            
+            canvas.copy(&texture, None, dest).expect("Could not render wall");
+        }
     }
 
     pub fn solid(&self) -> bool {
         self.solid
     }
 
+    #[allow(dead_code)]
     pub fn set_solid(&mut self, solid: bool) {
         self.solid = solid;
     }
